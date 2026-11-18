@@ -1,1 +1,5 @@
-.vscode
+.vscode/
+
+synthetic_dataset/
+**/synthetic_dataset/
+dataset/synthetic_dataset/
