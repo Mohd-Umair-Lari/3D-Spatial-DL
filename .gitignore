@@ -1,5 +1,11 @@
 .vscode/
+.env
 
+# Synthetic datasets
 synthetic_dataset/
 **/synthetic_dataset/
 dataset/synthetic_dataset/
+
+# Raw Point Cloud datasets (SCARLETT Combi dispense)
+dataset/Point_cloud_dataset/
+**/Point_cloud_dataset*/
