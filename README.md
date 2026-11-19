@@ -1,95 +1,71 @@
-# Aventix Scarlett Real-Data KGRAG
+# Aventix Real-Data KGRAG Notebook
 
-This project contains a Python/Jupyter implementation of a grounded Knowledge Graph Retrieval-Augmented Generation (KGRAG) pipeline for real SCARLETT optical-scanner point-cloud data from the Aventix Combi dispense experiment.
+This project contains a private Python/Jupyter implementation of a grounded Knowledge Graph Retrieval-Augmented Generation (KGRAG) workflow for optical point-cloud analysis.
 
-The primary artifact is `aventix_kgrag_real.ipynb`. It uses only the real CSV dataset under:
+The primary notebook is:
 
 ```text
-dataset/Point_cloud_dataset/Point cloud dataset - Combi dispense 2026-11/
-├── manifest.csv
-├── wells.csv
-├── scans/
-└── empty_reads/
+aventix_kgrag_real.ipynb
 ```
 
-The source data is read-only; the notebook does not modify the original scans.
+The notebook is designed to read an authorized local dataset supplied by the user. Sensitive source data is not included, described, enumerated, summarized, or reproduced in this README.
 
-## Objective
+## Notebook capabilities
 
-The notebook converts filled and empty point-cloud scans into traceable per-well measurements, deterministic verification outcomes, and an in-memory NetworkX knowledge graph. An optional Groq LLM explains retrieved graph facts, but it does not decide measurements, statuses, or faults.
+The notebook provides a complete analysis workflow for authorized point-cloud data:
 
-The dataset has no per-well gravimetric ground truth. Gravimetry is therefore used only as a plate-level reference; per-well values are scanner-derived estimates.
+- Dataset discovery and schema validation.
+- Per-object or per-well point isolation.
+- Multi-sensor fusion.
+- Statistical outlier filtering.
+- Empty-reference subtraction.
+- Geometric volume estimation.
+- Optional surface-tension and meniscus corrections.
+- Deterministic verification rules.
+- Measurement provenance.
+- In-memory NetworkX knowledge graph construction.
+- Grounded natural-language retrieval.
+- Optional Groq-based answer synthesis.
 
-## Dataset
+The language model is restricted to retrieved graph facts. It does not independently inspect source files, invent measurements, or decide verification outcomes.
 
-The real dataset contains 15 filled scans across eight plates:
+## Privacy and data handling
 
-- EP384-A: water, cumulative steps
-- AB0796-B: water, cumulative steps
-- AB0796-C: water, ladder fill
-- AB0796-D: DMSO, ladder fill
-- AB0796-E: DMSO, cumulative steps
-- AB0796-F: DMSO, partial fill
-- AB0796-G: DMSO, single fill
-- AB0796-H: DMSO, single fill
+- Keep all source data local and access-controlled.
+- Do not commit source files, generated measurement exports, credentials, or notebook outputs containing sensitive values.
+- Review notebook outputs before sharing or exporting the notebook.
+- Avoid publishing screenshots, printed tables, graph labels, paths, identifiers, or LLM evidence packs derived from private data.
+- The original source data should be treated as read-only.
 
-`manifest.csv` contains scan metadata, liquid, fill step, empty-read mapping, mass measurements, density, and plate-level gravimetric mean. `wells.csv` contains per-scan well centers and nominal volumes. Point files contain `well`, `row`, `col`, `x_mm`, `y_mm`, `z_mm`, and `sensor`.
+The notebook may generate derived tables or visualizations during execution. These outputs can contain sensitive information and must be handled with the same access restrictions as the source data.
 
-## Notebook pipeline
+## Running privately
 
-`aventix_kgrag_real.ipynb` performs the following:
-
-1. Locates and audits the real dataset.
-2. Loads the manifest, well centers, filled scans, and empty reads.
-3. Isolates each well using its measured center and plate-format radius.
-4. Fuses both optical sensors and removes Z outliers.
-5. Estimates the empty-well floor and subtracts it from the filled scan.
-6. Applies simple surface-tension and meniscus corrections using liquid, density, and radius.
-7. Produces raw and calibrated per-well volume estimates.
-8. Compares `estimated_uL` with per-well `nominal_uL`.
-9. Applies deterministic verification rules.
-10. Builds a NetworkX knowledge graph with measurement provenance.
-11. Answers grounded questions using graph facts and optional Groq synthesis.
-
-## Measurement columns
-
-- `nominal_uL`: Expected volume for the individual well from `wells.csv`.
-- `raw_geometric_uL`: Cylindrical volume from the uncorrected Z height.
-- `capillary_height_mm`: Estimated capillary rise from surface tension.
-- `meniscus_correction_uL`: Approximate meniscus adjustment.
-- `estimated_uL`: Corrected and scan-calibrated per-well estimate.
-- `gravimetric_mean_uL_per_well`: Plate-level balance-derived reference.
-- `deviation_pct`: Difference between `estimated_uL` and `nominal_uL`.
-- `gravimetric_deviation_pct`: Difference between `estimated_uL` and the plate-level gravimetric mean.
-- `baseline_estimated`: Whether a substitute empty-read baseline was required.
-- `status`, `fault_reason`, `rule_id`: Deterministic verification output.
-
-The notebook currently writes `measurments.csv` for backward compatibility; this filename can later be corrected to `measurements.csv`.
-
-## Knowledge graph and RAG
-
-The graph is built in memory with NetworkX and represents Lab, Run, Plate, Well, Measurement, Instrument, plate format, liquid, fill steps, and empty reads. Every measurement retains its source scan and verification details.
-
-The LLM receives only retrieved graph facts. If Groq is unavailable, deterministic graph-grounded responses remain available.
-
-## Running the notebook
+Install dependencies in an isolated environment:
 
 ```bash
 pip install -r requirements.txt
-jupyter notebook aventix_kgrag_real.ipynb
 ```
 
-Run cells from top to bottom. The notebook expects the real dataset at the relative path shown above.
+Open the notebook locally and run it only against an authorized local dataset. Do not use a shared or public notebook service for confidential data.
 
-For optional Groq responses, create `.env` in the project root:
+For optional LLM support, configure credentials through a local `.env` file or environment variables. Never place credentials directly in notebook cells or commit `.env` files.
 
 ```text
-GROQ_API_KEY=your_groq_api_key
+GROQ_API_KEY=your_private_key
 MODEL=llama-3.3-70b-versatile
 ```
 
-Without `GROQ_API_KEY`, deterministic processing and graph retrieval still work.
+If no LLM credential is configured, deterministic graph retrieval remains available locally.
 
-## Data safety
+## Safe sharing checklist
 
-The notebook reads the real CSV scans and writes only derived analysis output. It does not overwrite, rename, or regenerate the original point-cloud data.
+Before sharing the project, remove or review:
+
+- Executed notebook outputs.
+- Derived CSV files.
+- Graph exports.
+- Visualization images.
+- Logs and error traces.
+- Local paths and identifiers.
+- Environment files and API keys.
