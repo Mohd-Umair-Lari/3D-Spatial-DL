@@ -13,7 +13,7 @@ Initially, a naive flat-cylinder formula overestimated low-volume wells (estimat
 ```mermaid
 flowchart TD
     subgraph S1["1. Raw Point Cloud Ingestion"]
-        A1["Dual-Channel LiDAR / Optical Sensor Points<br/>(x, y, z, sensor=1,2)"] --> B1["Isolate Well Points (Center ± Radius)"]
+        A1["Dual-Channel Optical Sensor Points<br/>(x, y, z, sensor=1,2)"] --> B1["Isolate Well Points (Center ± Radius)"]
         B1 --> C1["Statistical Z-Outlier Filtering (mean ± 3σ)"]
     end
 
